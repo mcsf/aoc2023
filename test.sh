@@ -3,14 +3,20 @@
 test_day() {
 	day=$1
 	cd "$day" || exit 2
-	echo "$day"
+
+	# Capture output to flush all at once, since tests are run in parallel
+	out=$(mktemp)
+	echo "$day" > "$out"
+
 	for runner in run.*; do
 		if [ -x "$runner" ]; then
-			printf "  %s\t%s\n" "$runner" "$(pass_or_fail "$runner")"
+			printf "  %s\t%s\n" "$runner" "$(pass_or_fail "$runner")" >> "$out"
 		else
-			printf "  %s\tnot executable\n" "$runner"
+			printf "  %s\tnot executable\n" "$runner" >> "$out"
 		fi
 	done
+	cat "$out"
+	rm "$out"
 }
 
 pass_or_fail() {
@@ -33,9 +39,10 @@ if [ -n "$1" ]; then
 else
 	for day in */; do
 		if [ -f "$day"/expected ]; then
-			test_day "$day"
+			test_day "$day" &
 		else
 			printf "%s\n  (skipped)\n" "$day"
 		fi
 	done
+	wait
 fi
