@@ -21,16 +21,6 @@ def parse():
     return seeds, cmaps
 
 
-def part1():
-    print(min(map(convert_to_location, seeds)))
-
-
-def part2():
-    seed_ranges = list(as_ranges(seeds))
-    location_ranges = convert_to_location_ranges(seed_ranges)
-    print(min(rg.start for rg in location_ranges))
-
-
 def convert_to_location(seed: int) -> int:
     val = seed
     for mappings in cmaps:
@@ -117,6 +107,11 @@ def find_gaps(limits: Range, ranges: list[Range]) -> list[Range]:
     return result
 
 
+# Part 1
 seeds, cmaps = parse()
-part1()
-part2()
+print(min(map(convert_to_location, seeds)))
+
+# Part 2
+seed_ranges = list(as_ranges(seeds))
+location_ranges = convert_to_location_ranges(seed_ranges)
+print(min(rg.start for rg in location_ranges))
