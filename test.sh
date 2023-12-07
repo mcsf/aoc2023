@@ -27,12 +27,19 @@ pass_or_fail() {
 }
 
 cd "$(dirname "$0")" || exit 2
-for day in */; do
-	if [ -f "$day"/expected ]; then
-		test_day "$day"
-	else
-		printf "%s\n  (skipped)\n" "$day"
+
+if [ -n "$1" ]; then
+	if [ -f "$1"/expected ]; then
+		test_day "$1"
 	fi
-done
+else
+	for day in */; do
+		if [ -f "$day"/expected ]; then
+			test_day "$day"
+		else
+			printf "%s\n  (skipped)\n" "$day"
+		fi
+	done
+fi
 
 rm "$tmp"
