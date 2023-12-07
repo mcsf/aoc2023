@@ -1,7 +1,5 @@
 #!/bin/sh
 
-tmp=$(mktemp)
-
 test_day() {
 	day=$1
 	cd "$day" || exit 2
@@ -16,12 +14,14 @@ test_day() {
 }
 
 pass_or_fail() {
+	tmp=$(mktemp)
 	runner="$1"
 	if command time -ho "$tmp" "./$runner" < input | diff - expected; then
 		printf "PASS (%s)\n" "$(awk '{print $1}' "$tmp")"
 	else
 		echo FAIL
 	fi
+	rm "$tmp"
 }
 
 cd "$(dirname "$0")" || exit 2
@@ -39,5 +39,3 @@ else
 		fi
 	done
 fi
-
-rm "$tmp"
