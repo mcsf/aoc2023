@@ -14,7 +14,7 @@ Directory structure
 │ ├ input    - Individual input puzzle (not included)
 │ ├ sample   - Sample puzzle from the problem statement
 │ ├ expected - Expected output for puzzle solvers
-│ ├ run.py   - Puzzle solver (any executable file matching `^run.`
+│ ├ run.py   - Puzzle solver (any executable file matching `^run.`)
 │ └ run.hs   - There can be more than one solver per day
 │
 ├ 02
@@ -26,5 +26,9 @@ Testing
 -------
 
 ```
+# Run all tests
 ./test.sh
+
+# Run for a given day
+./test.sh 04
 ```
