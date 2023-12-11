@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sys import stdin
-from itertools import combinations, starmap
+from itertools import combinations
 
 
 def main():
@@ -20,7 +20,7 @@ def parse(f):
 
 
 def score(space):
-    return sum(starmap(distance, combinations(space, r=2)))
+    return sum(distance(a, b) for a, b in combinations(space, r=2))
 
 
 def expand(space, rate=2):
