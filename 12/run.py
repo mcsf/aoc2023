@@ -1,61 +1,39 @@
+#!/usr/bin/env python3
+
 from sys import stdin
-from itertools import groupby, combinations
-from math import comb
+from functools import cache
 
 records = []
 for line in stdin:
-    springs, code = line.strip().split(' ')
-    springs = list(springs)  # type: ignore
-    code = list(map(int, code.split(',')))  # type: ignore
-    records.append((springs, code))
+    row, shape = line.strip().split(' ')
+    records.append((row, tuple(map(int, shape.split(',')))))
 
 
-def satisfies(springs, code):
-    return code == [len(list(g)) for k, g in groupby(springs) if k == '#']
+@cache
+def count_possibs(row: str, shape: tuple[int, ...]) -> int:
+    if not row:
+        return int(not shape)
+
+    if not shape:
+        return int("#" not in row)
+
+    c, rest = row[0], row[1:]
+
+    if c == ".":
+        return count_possibs(rest, shape)
+
+    if c == "#":
+        n = shape[0]
+        if len(row) < n or "." in row[:n] or (len(row) > n and row[n] == "#"):
+            return 0
+        return count_possibs(row[n + 1:], shape[1:])
+
+    return count_possibs("#" + rest, shape) + count_possibs("." + rest, shape)
 
 
-def count_assignments(record):
-    _, code = record
-    return sum(1 for springs in generate_assignments(record)
-               if satisfies(springs, code))
+def expand(row: str, shape: tuple[int, ...]) -> tuple[str, tuple[int, ...]]:
+    return "?".join([row] * 5), shape * 5
 
 
-def generate_assignments(record):
-    springs, code = record
-
-    # Number of '#' left to assign
-    n = sum(code) - sum(1 for x in springs if x == '#')
-
-    # Slots into which to assign them
-    slots = [i for i, c in enumerate(springs) if c == '?']
-
-    print(''.join(springs), code, 'with', comb(len(slots), n), 'combinations')
-
-    for slot_assignments in combinations(slots, n):
-        yield assign(springs, slot_assignments)
-
-
-def assign(springs, slot_assignments):
-    result = []
-    for i in range(len(springs)):
-        spring = springs[i]
-        if i in slot_assignments:
-            spring = '#'
-        elif springs[i] == '?':
-            spring = '.'
-        result.append(spring)
-    return result
-
-
-def unfold(record):
-    springs, code = record
-    new_springs = springs.copy()
-    for i in range(4):
-        new_springs += ['?'] + springs
-    return new_springs, 5 * code
-
-
-# print(records[0])
-# print(unfold(records[0]))
-print(sum(count_assignments(r) for r in records), flush=True)
-print(sum(count_assignments(unfold(r)) for r in records), flush=True)
+print(sum(count_possibs(*r) for r in records))
+print(sum(count_possibs(*expand(*r)) for r in records))
